@@ -7,7 +7,7 @@ pub fn mark<T>(obj: T, lo: usize, hi: usize) -> Marked<T> {
 
 fn error(s: String, lo: usize, hi: usize) -> ! {
     ERRORS.with(|errors| {
-        errors.borrow().as_ref().unwrap().die(Mark::new(lo as u32, hi as u32), s);
+        errors.borrow().as_ref().unwrap().die(&Mark::new(lo as u32, hi as u32), s);
     });
     unreachable!()
 }

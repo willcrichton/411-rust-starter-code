@@ -50,7 +50,7 @@ impl Translator {
             ast::Expression_::Variable(id) => {
                 match self.syms.get(&id) {
                     Some(sym) => ilang::Expression::Temp(*sym),
-                    None => self.errors.die(exp.mark, format!("attempted to use variable {:?} before initialization", id))
+                    None => self.errors.die(&exp.mark, format!("attempted to use variable {:?} before initialization", id))
                 }
             },
             ast::Expression_::Constant(c) => ilang::Expression::Constant(c),

@@ -30,7 +30,8 @@ impl Translator {
 
     fn stm(&mut self, s: ilang::Statement) {
         match s {
-            ilang::Statement::Move(ilang::Expression::Temp(t), e) => self.exp(asm::Operand::Temp(t), e),
+            ilang::Statement::Move(ilang::Expression::Temp(t), e) =>
+                self.exp(asm::Operand::Temp(t), e),
             ilang::Statement::Move(..) => unreachable!(),
             // return e is implented as %eax <- e
             ilang::Statement::Return(e) => {

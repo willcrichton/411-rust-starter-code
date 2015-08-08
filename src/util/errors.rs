@@ -22,11 +22,11 @@ impl Errors {
     /// Emit an error for the specified `Mark` (location in the program).
     ///
     /// This does not abort compilation to allow more errors to be printed.
-    pub fn add(&self, m: Mark, msg: String) {
+    pub fn add(&self, m: &Mark, msg: String) {
         use std::io::Write;
         let mut out = io::stderr();
         let msg = format!("error: {}\n", msg);;
-        if m == DUMMY {
+        if *m == DUMMY {
             out.write(msg.as_bytes()).unwrap();
         } else {
             out.write(
@@ -39,7 +39,7 @@ impl Errors {
     }
 
     /// Emit an error, and at the same time abort the program.
-    pub fn die(&self, m: Mark, msg: String) -> ! {
+    pub fn die(&self, m: &Mark, msg: String) -> ! {
         self.add(m, msg);
         die()
     }

@@ -9,8 +9,9 @@ use std::clone::Clone;
 
 pub mod ast;
 mod parse_utils;
-// peg_file! parser("grammar.rustpeg");
-mod parser;
+// If you want to debug compilation errors in your grammar, then manually compile the grammar via
+// the peg executable and include the generated file instead of using this macro.
+peg_file! parser("grammar.rustpeg");
 
 thread_local!(
     static GENERATOR: RefCell<symbol::Generator> = RefCell::new(symbol::Generator::new()));

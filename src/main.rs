@@ -8,6 +8,7 @@ use std::env;
 use std::path::PathBuf;
 
 mod parse;
+mod types;
 mod ir;
 mod codegen;
 mod util;
@@ -22,6 +23,9 @@ fn compile(input: &str, matches: getopts::Matches) {
     if matches.opt_present("dump-ast") {
         println!("{:?}", ast);
     }
+
+    types::typecheck(&ast);
+    ast.errors.check();
 
     let ir = ir::trans::translate(ast);
     if matches.opt_present("dump-ir") {
