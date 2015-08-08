@@ -2,3 +2,7 @@
 name = "411-rust-starter-code"
 version = "0.1.0"
 authors = ["Will Crichton <willcrichton@cmu.edu>"]
+
+[dependencies]
+getopts = "0.2"
+peg = "0.3.0"

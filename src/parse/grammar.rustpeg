@@ -1,0 +1,94 @@
+use super::ast::*;
+use super::parse_utils::{mark, str_to_ident, hex_to_num, int_to_num, vec_to_expr};
+
+singleline = "//" (!"\n" .)*
+multiline = "/*" (multiline / (!"*/" .))* "*/" // weird format supports nested multilines
+comment = singleline / multiline
+
+whitespace = [ \t\n\r\x0C\x0B] // \x0C = \f, \x0B = \v
+
+_ = (whitespace / comment)*
+
+MAIN = "main" _
+TYPE = "int" (whitespace / comment)+
+
+ident -> Ident = [a-zA-Z_][a-zA-Z0-9_]* { str_to_ident(match_str) }
+IDENT -> Ident = i:ident _ { i }
+
+hex   -> u32 = [0-9a-fA-F]+ { hex_to_num(match_str, start_pos, pos) }
+const -> u32
+    = "0" [xX] h:hex { h }
+    / [1-9][0-9]*    { int_to_num(match_str, start_pos, pos) }
+    / "0"            { 0u32 }
+
+CONST -> u32 = c:const _ { c }
+
+ASNOP -> Operator
+    = "-=" _ { Operator::Minus }
+    / "+=" _ { Operator::Plus }
+    / "*=" _ { Operator::Times }
+    / "/=" _ { Operator::DividedBy }
+    / "%=" _ { Operator::Modulo }
+
+PLUS  -> Operator = "+" _       { Operator::Plus }
+MINUS -> Operator = "-" !"-" _  { Operator::Minus }
+TIMES -> Operator = "*" _       { Operator::Times }
+DIV   -> Operator = "/" _       { Operator::DividedBy }
+MOD   -> Operator = "%" _       { Operator::Modulo }
+
+LPAREN = "(" _
+RPAREN = ")" _
+LBRACE = "{" _
+RBRACE = "}" _
+RETURN = "return" _
+SEMICOLON = ";" _
+EQUALS = "=" _
+DECREMENT = "--"
+
+#[pub]
+program -> Vec<Statement> = _ TYPE MAIN LPAREN RPAREN LBRACE prog:stmt* RBRACE { prog }
+
+stmt -> Statement
+    = RETURN e:exp SEMICOLON { mark(Statement_::Return(e), start_pos, pos) }
+    / s:simp SEMICOLON       { s }
+    / d:decl SEMICOLON       { d }
+
+decl -> Statement
+    = TYPE i:IDENT EQUALS e:exp { mark(Statement_::DeclAssign(i, e), start_pos, pos) }
+    / TYPE i:IDENT              { mark(Statement_::Decl(i), start_pos, pos) }
+
+simp -> Statement
+    = i:lvalue EQUALS e:exp   { mark(Statement_::Assign(i, e), start_pos, pos) }
+    / i:lvalue op:ASNOP e:exp
+      { mark(Statement_::Assign(i,
+            mark(Expression_::Binary(op, Box::new(mark(Expression_::Variable(i), start_pos, pos)),
+                                     Box::new(e)),
+                 start_pos, pos)),
+            start_pos, pos) }
+
+lvalue -> Ident
+    = LPAREN i:lvalue RPAREN { i }
+    / i:IDENT                { i }
+
+exp -> Expression
+    = e:factor vec:exp_tail*
+    { if vec.is_empty() { e } else { vec_to_expr(e, vec, start_pos, pos) } }
+
+exp_tail -> (Operator, Expression)
+    = op:(PLUS / MINUS) e:factor  { (op, e) }
+
+factor -> Expression
+    = e:primary vec:factor_tail*
+    { if vec.is_empty() { e } else { vec_to_expr(e, vec, start_pos, pos) } }
+
+factor_tail -> (Operator, Expression)
+    = op:(TIMES / DIV / MOD) e:primary { (op, e) }
+
+primary -> Expression
+    = LPAREN e:exp RPAREN { e }
+    / DECREMENT e:primary
+      { mark(Expression_::Unary(Operator::Decrement, Box::new(e)), start_pos, pos) }
+    / MINUS e:primary
+      { mark(Expression_::Unary(Operator::Negative, Box::new(e)), start_pos, pos) }
+    / c:CONST             { mark(Expression_::Constant(c), start_pos, pos) }
+    / i:IDENT             { mark(Expression_::Variable(i), start_pos, pos) }
