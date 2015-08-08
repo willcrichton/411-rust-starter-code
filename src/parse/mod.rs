@@ -7,7 +7,7 @@ use util::mark::CodeMap;
 use util::errors::Errors;
 use std::clone::Clone;
 
-mod ast;
+pub mod ast;
 mod parse_utils;
 // peg_file! parser("grammar.rustpeg");
 mod parser;

@@ -8,6 +8,8 @@ use std::env;
 use std::path::PathBuf;
 
 mod parse;
+mod ir;
+mod codegen;
 mod util;
 
 fn print_usage(program: &str, opts: Options) {
@@ -20,6 +22,16 @@ fn compile(input: &str, matches: getopts::Matches) {
     if matches.opt_present("dump-ast") {
         println!("{:?}", ast);
     }
+
+    let ir = ir::trans::translate(ast);
+    if matches.opt_present("dump-ir") {
+        println!("{:?}", ir);
+    }
+
+    let asm = codegen::translate(ir);
+    if matches.opt_present("dump-asm") {
+        println!("{:?}", asm);
+    }
 }
 
 fn main() {
@@ -28,6 +40,8 @@ fn main() {
     let mut opts = Options::new();
     opts.optflag("h", "help", "print this help menu");
     opts.optflag("", "dump-ast", "print AST");
+    opts.optflag("", "dump-ir", "print IR");
+    opts.optflag("", "dump-asm", "print assembly");
     let matches = match opts.parse(&args[1..]) {
         Ok(m)  => m,
         Err(f) => panic!(f.to_string())
