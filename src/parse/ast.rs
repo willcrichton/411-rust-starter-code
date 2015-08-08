@@ -5,7 +5,7 @@
 
 use std::fmt;
 
-use util::{mark, errors, symbol};
+use util::mark;
 use util::errors::Errors;
 use util::symbol::Symbol;
 
@@ -42,41 +42,41 @@ pub enum Operator {
     Decrement,
 }
 
-impl fmt::Debug for Program {
+impl fmt::Display for Program {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         try!(writeln!(f, "int main() {{"));
         for stm in self.statements.iter() {
-            try!(writeln!(f, "  {:?}", stm));
+            try!(writeln!(f, "  {}", stm));
         }
         writeln!(f, "}}")
     }
 }
 
-impl fmt::Debug for Statement_ {
+impl fmt::Display for Statement_ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use self::Statement_::*;
         match *self {
-            Decl(ref id) => write!(f, "int {:?};", id),
-            DeclAssign(ref id, ref expr) => write!(f, "int {:?} = {:?};", id, expr),
-            Assign(ref id, ref expr) => write!(f, "{:?} = {:?};", id, expr),
-            Return(ref expr) => write!(f, "return {:?};", expr),
+            Decl(ref id) => write!(f, "int {};", id),
+            DeclAssign(ref id, ref expr) => write!(f, "int {} = {};", id, expr),
+            Assign(ref id, ref expr) => write!(f, "{} = {};", id, expr),
+            Return(ref expr) => write!(f, "return {};", expr),
         }
     }
 }
 
-impl fmt::Debug for Expression_ {
+impl fmt::Display for Expression_ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use self::Expression_::*;
         match *self {
-            Variable(ref id) => write!(f, "{:?}", id),
-            Constant(c) => write!(f, "{:?}", c),
-            Unary(ref op, ref e) => write!(f, "{:?}({:?})", op, e),
-            Binary(ref op, ref e1, ref e2) => write!(f, "({:?} {:?} {:?})", e1, op, e2),
+            Variable(ref id) => write!(f, "{}", id),
+            Constant(c) => write!(f, "{}", c),
+            Unary(ref op, ref e) => write!(f, "{}({})", op, e),
+            Binary(ref op, ref e1, ref e2) => write!(f, "({} {} {})", e1, op, e2),
         }
     }
 }
 
-impl fmt::Debug for Operator {
+impl fmt::Display for Operator {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use self::Operator::*;
         match *self {

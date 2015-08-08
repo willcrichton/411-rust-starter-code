@@ -66,8 +66,8 @@ impl<T: PartialEq> PartialEq for Marked<T> {
     fn eq(&self, other: &Marked<T>) -> bool { self.node.eq(&other.node) }
 }
 
-/// Allow marked things to be printed with `{}`
-impl<T: fmt::Debug> fmt::Debug for Marked<T> {
+/// Allow marked things to be printed with `{:?}`
+impl<T: fmt::Display> fmt::Display for Marked<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.node.fmt(f)
     }

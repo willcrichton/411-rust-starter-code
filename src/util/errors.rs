@@ -30,10 +30,13 @@ impl Errors {
             out.write(msg.as_bytes()).unwrap();
         } else {
             out.write(
-                format!("{}:{}:{}",
-                        self.cm.file().display(),
-                        m.to_string(&self.cm),
-                        msg).as_bytes()).unwrap();
+                format!(
+                    "{}:{}:{}",
+                    self.cm.file().display(),
+                    m.to_string(&self.cm),
+                    msg)
+                    .as_bytes())
+                .unwrap();
         }
         self.errored.set(true);
     }

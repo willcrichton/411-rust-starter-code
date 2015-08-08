@@ -21,7 +21,7 @@ impl Allocator {
     /// Returns the number of temporaries allocated so far
     pub fn cnt(&self) -> usize { self.next.get() }
 
-    /// Resets this this allocator back to 0
+    /// Resets the allocator back to 0
     pub fn reset(&self) { self.next.set(0); }
 
     /// Generates a new unique temporary
@@ -32,7 +32,7 @@ impl Allocator {
     }
 }
 
-impl fmt::Debug for Temp {
+impl fmt::Display for Temp {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let Temp(i) = *self;
         write!(f, "%t{}", i)

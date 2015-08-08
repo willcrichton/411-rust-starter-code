@@ -63,12 +63,11 @@ impl Generator {
     }
 }
 
-impl fmt::Debug for Symbol {
+impl fmt::Display for Symbol {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let Symbol(u) = *self;
         SYMBOLS.with(|symbols| {
             symbols.borrow()[u].fmt(f)
-        });
-        Ok(())
+        })
     }
 }

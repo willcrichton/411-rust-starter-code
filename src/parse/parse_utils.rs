@@ -1,3 +1,5 @@
+//! Various functions to aid the hacky PEG parser
+
 use util::mark::{Mark, Marked};
 use super::{GENERATOR, ERRORS, ast};
 
@@ -18,7 +20,7 @@ pub fn str_to_ident(s: &str) -> ast::Ident {
     symbol.unwrap()
 }
 
-pub fn int_to_num(s: &str, lo: usize, hi: usize) -> u32{
+pub fn int_to_num(s: &str, lo: usize, hi: usize) -> u32 {
     match s.parse::<u32>() {
         Ok(n) => {
             if n > 1 << 31 {
@@ -26,13 +28,15 @@ pub fn int_to_num(s: &str, lo: usize, hi: usize) -> u32{
             }
             return n;
         },
-        Err(err) =>
-            error(format!("{} is an invalid integer: {}", s, err), lo, hi)
+        Err(err) => error(format!("{} is an invalid integer: {}", s, err), lo, hi)
     }
 }
 
-pub fn hex_to_num(num: &str, lo: usize, hi: usize) -> u32 {
-    num.parse::<u32>().unwrap()
+pub fn hex_to_num(s: &str, lo: usize, hi: usize) -> u32 {
+    match u32::from_str_radix(s, 16) {
+        Ok(n) => n,
+        Err(err) => error(format!("{} is an invalid integer: {}", s, err), lo, hi)
+    }
 }
 
 pub fn vec_to_expr(e: ast::Expression, vec: Vec<(ast::Operator, ast::Expression)>,

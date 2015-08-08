@@ -51,7 +51,7 @@ impl<'a> TypeChecker<'a> {
         match self.syms.insert(id, true) {
             Some(..) => {}
             None => {
-                let msg = format!("undeclared variable `{:?}`", id);
+                let msg = format!("undeclared variable `{}`", id);
                 self.prog.errors.add(mark, msg);
             }
         }
@@ -62,12 +62,12 @@ impl<'a> TypeChecker<'a> {
             ast::Expression_::Variable(id) => {
                 match self.syms.get(&id).map(|b| *b) {
                     Some(false) if !self.return_found => {
-                        let msg = format!("uninitialized variable `{:?}`", id);
+                        let msg = format!("uninitialized variable `{}`", id);
                         self.prog.errors.add(&e.mark, msg);
                     }
                     Some(..) => {}
                     None => {
-                        let msg = format!("undeclared variable `{:?}`", id);
+                        let msg = format!("undeclared variable `{}`", id);
                         self.prog.errors.add(&e.mark, msg);
                     }
                 }
@@ -81,7 +81,7 @@ impl<'a> TypeChecker<'a> {
     fn check_decl(&mut self, id: ast::Ident, mark: &mark::Mark, initialized: bool) {
         match self.syms.insert(id, initialized) {
             Some(..) => {
-                let msg = format!("redeclared variable `{:?}`", id);
+                let msg = format!("redeclared variable `{}`", id);
                 self.prog.errors.add(mark, msg);
             }
             None => {}

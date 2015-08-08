@@ -1,4 +1,6 @@
-//! IR tree
+//! IR language, or ilang
+//!
+//! Represents the AST as n-address assembly.
 
 use std::fmt;
 use util::temp;
@@ -21,38 +23,38 @@ pub enum Expression {
 
 pub enum Binop { Add, Sub, Mul, Div, Mod }
 
-impl fmt::Debug for Program {
+impl fmt::Display for Program {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for (i, statement) in self.statements.iter().enumerate() {
             if i > 0 { try!(write!(f, "\n")) }
-            try!(write!(f, "{:?}", statement))
+            try!(write!(f, "{}", statement))
         }
         Ok(())
     }
 }
 
-impl fmt::Debug for Statement {
+impl fmt::Display for Statement {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use self::Statement::*;
         match *self {
-            Move(ref e1, ref e2) => write!(f, "{:?} <-- {:?}", e1, e2),
-            Return(ref e) => write!(f, "return {:?}", e),
+            Move(ref e1, ref e2) => write!(f, "{} <-- {}", e1, e2),
+            Return(ref e) => write!(f, "return {}", e),
         }
     }
 }
 
-impl fmt::Debug for Expression {
+impl fmt::Display for Expression {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use self::Expression::*;
         match *self {
-            Constant(c) => write!(f, "{:?}", c),
-            Temp(ref t) => write!(f, "{:?}", t),
-            Binop(ref b, ref e1, ref e2) => write!(f, "({:?} {:?} {:?})", e1, b, e2),
+            Constant(c) => write!(f, "{}", c),
+            Temp(ref t) => write!(f, "{}", t),
+            Binop(ref b, ref e1, ref e2) => write!(f, "({} {} {})", e1, b, e2),
         }
     }
 }
 
-impl fmt::Debug for Binop {
+impl fmt::Display for Binop {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use self::Binop::*;
         match *self {
