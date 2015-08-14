@@ -24,3 +24,13 @@ The crate is broken up into the following files/directories:
 - src/ir/       IR language and translator
 - src/codegen/  Assembly representation, code generation, register allocation
 - src/util/     Various utilities used across parts of the code
+
+===========
+
+Notes on using Rust for your compiler:
+
+- There are no good graph libraries. This is a good resource for implementing
+  graphs in rust: https://github.com/nrc/r4cppp/blob/master/graphs/README.md
+  
+- Don't use thread_local! any more than you must. Globals are bad, and only
+  used in the parser due to the constraints of the parser generator.
