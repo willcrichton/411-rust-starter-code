@@ -1,13 +1,13 @@
- _      __    _____                       _ _           
-| |    /  |  /  __ \                     (_) |          
-| |    `| |  | /  \/ ___  _ __ ___  _ __  _| | ___ _ __ 
+ _      __    _____                       _ _
+| |    /  |  /  __ \                     (_) |
+| |    `| |  | /  \/ ___  _ __ ___  _ __  _| | ___ _ __
 | |     | |  | |    / _ \| '_ ` _ \| '_ \| | |/ _ \ '__|
-| |_____| |_ | \__/\ (_) | | | | | | |_) | | |  __/ |   
-\_____/\___/  \____/\___/|_| |_| |_| .__/|_|_|\___|_|   
-                                   | |                  
+| |_____| |_ | \__/\ (_) | | | | | | |_) | | |  __/ |
+\_____/\___/  \____/\___/|_| |_| |_| .__/|_|_|\___|_|
+                                   | |
                                    |_|
 
-A barebones C0 compiler for 15-411 written in Rust.                                   
+A barebones C0 compiler for 15-411 written in Rust.
 Written by Alex Crichton, updated by Will Crichton.
 Last modified August 7th, 2015.
 
@@ -22,5 +22,5 @@ The crate is broken up into the following files/directories:
 - src/parse/    AST and PEG parser
 - src/types     Typechecker
 - src/ir/       IR language and translator
-- src/codegen/  Assembly representation and code generation
+- src/codegen/  Assembly representation, code generation, register allocation
 - src/util/     Various utilities used across parts of the code
