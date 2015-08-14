@@ -1,8 +1,10 @@
-//! Parsing Expression Grammar for L1.
-//! See https://github.com/kevinmehall/rust-peg for more info on the parser.
+//! Parsing expression grammar (PEG) for L1
+//! See https://github.com/kevinmehall/rust-peg for more info on the parser. We use a PEG
+//! generator instead of a CFG generator because there isn't a good one for Rust yet. We
+//! apply a minor hack to do "lexing" in the parse stage as well.
 
 use super::ast::*;
-use super::parse_utils::{mark, str_to_ident, hex_to_num, int_to_num, vec_to_expr};
+use super::parse_utils::{mark, str_to_ident, parse_number, vec_to_expr};
 
 singleline = "//" (!"\n" .)*
 multiline = "/*" (multiline / (!"*/" .))* "*/"
@@ -19,12 +21,12 @@ MAIN = "main" _
 TYPE = "int" __
 
 ident -> Ident = [a-zA-Z_][a-zA-Z0-9_]* { str_to_ident(match_str) }
-IDENT -> Ident = i:ident _ { i }
+IDENT -> Ident = i:ident _              { i }
 
-hex   -> u32 = [0-9a-fA-F]+ { hex_to_num(match_str, start_pos, pos) }
+hex   -> u32 = [0-9a-fA-F]+ { parse_number(match_str, 16, start_pos, pos) }
 const -> u32
     = "0" [xX] h:hex { h }
-    / [1-9][0-9]*    { int_to_num(match_str, start_pos, pos) }
+    / [1-9][0-9]*    { parse_number(match_str, 10, start_pos, pos) }
     / "0"            { 0u32 }
 
 CONST -> u32 = c:const _ { c }

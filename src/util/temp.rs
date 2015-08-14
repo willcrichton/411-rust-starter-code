@@ -19,7 +19,7 @@ impl Allocator {
     pub fn new() -> Allocator { Allocator { next: Cell::new(0) } }
 
     /// Returns the number of temporaries allocated so far
-    pub fn cnt(&self) -> usize { self.next.get() }
+    pub fn count(&self) -> usize { self.next.get() }
 
     /// Resets the allocator back to 0
     pub fn reset(&self) { self.next.set(0); }

@@ -67,7 +67,6 @@ impl Translator {
                     Box::new(self.exp(*e1)),
                     Box::new(self.exp(*e2))),
 
-            // should be impossible
             ast::Expression_::Unary(_, _) => unreachable!()
         }
     }

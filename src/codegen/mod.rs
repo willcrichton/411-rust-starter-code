@@ -5,7 +5,6 @@
 use ir::ilang;
 use util::temp;
 
-#[allow(dead_code)]
 pub mod asm;
 
 struct Translator {

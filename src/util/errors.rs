@@ -25,19 +25,15 @@ impl Errors {
     pub fn add(&self, m: &Mark, msg: String) {
         use std::io::Write;
         let mut out = io::stderr();
-        let msg = format!("error: {}\n", msg);;
-        if *m == DUMMY {
-            out.write(msg.as_bytes()).unwrap();
-        } else {
-            out.write(
-                format!(
-                    "{}:{}:{}",
-                    self.cm.file().display(),
-                    m.to_string(&self.cm),
-                    msg)
-                    .as_bytes())
-                .unwrap();
+        let mut msg = format!("error: {}\n", msg);
+        if *m != DUMMY {
+            msg = format!(
+                "{}:{}:{}",
+                self.cm.file().display(),
+                m.to_string(&self.cm),
+                msg)
         }
+        out.write(msg.as_bytes()).unwrap();
         self.errored.set(true);
     }
 
