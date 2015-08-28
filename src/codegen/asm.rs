@@ -24,7 +24,7 @@ pub enum Operand {
 }
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Register { EAX, EBX, ECX, EDX, R11 }
+pub enum Register { EAX }
 
 #[derive(Clone)]
 pub enum Operation { Add, Sub, Mul, Div, Mod }
@@ -40,7 +40,7 @@ impl fmt::Display for Instruction {
                     &None => write!(f, "\t{}\t{} <- {}", op, d, s1),
                 }
             }
-            Mov(ref d, ref s) => write!(f, "\tMOVL\t{}, {}", s, d),
+            Mov(ref d, ref s) => write!(f, "\tMOV\t{}, {}", s, d),
             Directive(ref s) => write!(f, "\t{}", s),
             Comment(ref s) => write!(f, "\t/* {} */", s),
         }
@@ -64,10 +64,6 @@ impl fmt::Display for Register {
         use self::Register::*;
         match *self {
             EAX => "%eax".fmt(f),
-            EBX => "%ebx".fmt(f),
-            ECX => "%ecx".fmt(f),
-            EDX => "%edx".fmt(f),
-            R11 => "%r11".fmt(f),
         }
     }
 }
