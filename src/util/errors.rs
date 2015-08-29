@@ -1,12 +1,11 @@
 //! A utility module to collect errors and print them.
 
 use std::cell::Cell;
-use std::io;
+use std::io::{self, Write};
 use std::process;
 
-use util::mark::{Mark, CodeMap, DUMMY};
+use util::mark::{Mark, CodeMap, DUMMY_MARK};
 
-#[derive(Clone)]
 pub struct Errors {
     cm: CodeMap,
     errored: Cell<bool>,
@@ -22,23 +21,19 @@ impl Errors {
     /// Emit an error for the specified `Mark` (location in the program).
     ///
     /// This does not abort compilation to allow more errors to be printed.
-    pub fn add(&self, m: &Mark, msg: String) {
-        use std::io::Write;
+    pub fn add(&self, m: &Mark, msg: &str) {
         let mut out = io::stderr();
         let mut msg = format!("error: {}\n", msg);
-        if *m != DUMMY {
-            msg = format!(
-                "{}:{}:{}",
-                self.cm.file().display(),
-                m.to_string(&self.cm),
-                msg)
+        if *m != DUMMY_MARK {
+            msg = format!("{}:{}:{}", self.cm.file().display(),
+                          m.to_string(&self.cm), msg)
         }
         out.write(msg.as_bytes()).unwrap();
         self.errored.set(true);
     }
 
     /// Emit an error, and at the same time abort the program.
-    pub fn die(&self, m: &Mark, msg: String) -> ! {
+    pub fn die(&self, m: &Mark, msg: &str) -> ! {
         self.add(m, msg);
         die()
     }

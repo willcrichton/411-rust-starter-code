@@ -5,33 +5,34 @@
 
 use std::fmt;
 
-use util::mark;
-use util::errors::Errors;
-use util::symbol::Symbol;
+use util::{Marked, Errors, Symbol};
 
 pub struct Program {
     pub statements: Vec<Statement>,
     pub errors: Errors,
 }
 
-pub type Statement = mark::Marked<Statement_>;
+pub type Statement = Marked<Statement_>;
+#[derive(Clone)]
 pub enum Statement_ {
     Decl(Ident),
-    DeclAssign(Ident, Expression),
-    Assign(Ident, Expression),
-    Return(Expression),
+    DeclAssign(Ident, Expr),
+    Assign(Ident, Expr),
+    Return(Expr),
 }
 
-pub type Expression = mark::Marked<Expression_>;
-pub enum Expression_ {
+pub type Expr = Marked<Expr_>;
+#[derive(Clone)]
+pub enum Expr_ {
     Variable(Ident),
     Constant(u32),
-    Unary(Operator, Box<Expression>),
-    Binary(Operator, Box<Expression>, Box<Expression>),
+    Unary(Operator, Box<Expr>),
+    Binary(Operator, Box<Expr>, Box<Expr>),
 }
 
 pub type Ident = Symbol;
 
+#[derive(Copy, Clone)]
 pub enum Operator {
     Plus,
     Minus,
@@ -54,38 +55,42 @@ impl fmt::Display for Program {
 
 impl fmt::Display for Statement_ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::Statement_::*;
         match *self {
-            Decl(ref id) => write!(f, "int {};", id),
-            DeclAssign(ref id, ref expr) => write!(f, "int {} = {};", id, expr),
-            Assign(ref id, ref expr) => write!(f, "{} = {};", id, expr),
-            Return(ref expr) => write!(f, "return {};", expr),
+            Statement_::Decl(ref id) => write!(f, "int {};", id),
+            Statement_::DeclAssign(ref id, ref expr) => {
+                write!(f, "int {} = {};", id, expr)
+            }
+            Statement_::Assign(ref id, ref expr) => {
+                write!(f, "{} = {};", id, expr)
+            }
+            Statement_::Return(ref expr) => write!(f, "return {};", expr),
         }
     }
 }
 
-impl fmt::Display for Expression_ {
+impl fmt::Display for Expr_ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::Expression_::*;
         match *self {
-            Variable(ref id) => write!(f, "{}", id),
-            Constant(c) => write!(f, "{}", c),
-            Unary(ref op, ref e) => write!(f, "{}({})", op, e),
-            Binary(ref op, ref e1, ref e2) => write!(f, "({} {} {})", e1, op, e2),
+            Expr_::Variable(ref id) => write!(f, "{}", id),
+            Expr_::Constant(c) => write!(f, "{}", c),
+            Expr_::Unary(ref op, ref e) => write!(f, "{}({})", op, e),
+            Expr_::Binary(ref op, ref e1, ref e2) => {
+                write!(f, "({} {} {})", e1, op, e2)
+            }
         }
     }
 }
 
 impl fmt::Display for Operator {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::Operator::*;
         match *self {
-            Plus => "+".fmt(f),
-            Negative | Minus => "-".fmt(f),
-            Times => "*".fmt(f),
-            DividedBy => "/".fmt(f),
-            Modulo => "%".fmt(f),
-            Decrement => "--".fmt(f),
+            Operator::Plus => "+".fmt(f),
+            Operator::Negative |
+            Operator::Minus => "-".fmt(f),
+            Operator::Times => "*".fmt(f),
+            Operator::DividedBy => "/".fmt(f),
+            Operator::Modulo => "%".fmt(f),
+            Operator::Decrement => "--".fmt(f),
         }
     }
 }
