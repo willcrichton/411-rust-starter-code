@@ -69,9 +69,9 @@ simp -> Statement
     = i:lvalue EQUALS e:exp   { mark(Statement_::Assign(i, e), start_pos, pos) }
     / i:lvalue op:ASNOP e:exp
       { mark(Statement_::Assign(i,
-            mark(Expression_::Binary(
+            mark(Expr_::Binary(
                 op,
-                Box::new(mark(Expression_::Variable(i), start_pos, pos)),
+                Box::new(mark(Expr_::Variable(i), start_pos, pos)),
                 Box::new(e)),
             start_pos, pos)),
         start_pos, pos) }
@@ -80,25 +80,25 @@ lvalue -> Ident
     = LPAREN i:lvalue RPAREN { i }
     / i:IDENT                { i }
 
-exp -> Expression
+exp -> Expr
     = e:factor vec:exp_tail*
     { if vec.is_empty() { e } else { vec_to_expr(e, vec, start_pos, pos) } }
 
-exp_tail -> (Operator, Expression)
+exp_tail -> (Operator, Expr)
     = op:(PLUS / MINUS) e:factor  { (op, e) }
 
-factor -> Expression
+factor -> Expr
     = e:primary vec:factor_tail*
     { if vec.is_empty() { e } else { vec_to_expr(e, vec, start_pos, pos) } }
 
-factor_tail -> (Operator, Expression)
+factor_tail -> (Operator, Expr)
     = op:(TIMES / DIV / MOD) e:primary { (op, e) }
 
-primary -> Expression
+primary -> Expr
     = LPAREN e:exp RPAREN { e }
     / DECREMENT e:primary
-      { mark(Expression_::Unary(Operator::Decrement, Box::new(e)), start_pos, pos) }
+      { mark(Expr_::Unary(Operator::Decrement, Box::new(e)), start_pos, pos) }
     / MINUS e:primary
-      { mark(Expression_::Unary(Operator::Negative, Box::new(e)), start_pos, pos) }
-    / c:CONST { mark(Expression_::Constant(c), start_pos, pos) }
-    / i:IDENT { mark(Expression_::Variable(i), start_pos, pos) }
+      { mark(Expr_::Unary(Operator::Negative, Box::new(e)), start_pos, pos) }
+    / c:CONST { mark(Expr_::Constant(c), start_pos, pos) }
+    / i:IDENT { mark(Expr_::Variable(i), start_pos, pos) }

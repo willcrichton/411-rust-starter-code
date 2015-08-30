@@ -10,13 +10,13 @@ use std::cell::Cell;
 pub struct Temp(usize);
 
 /// An allocator of Temporaries, used during translation.
-pub struct Allocator {
+pub struct TempAllocator {
     next: Cell<usize>,
 }
 
-impl Allocator {
+impl TempAllocator {
     /// Prepares a new allocator ready to create new temporaries
-    pub fn new() -> Allocator { Allocator { next: Cell::new(0) } }
+    pub fn new() -> TempAllocator { TempAllocator { next: Cell::new(0) } }
 
     /// Returns the number of temporaries allocated so far
     pub fn count(&self) -> usize { self.next.get() }

@@ -21,34 +21,35 @@ pub struct Symbol(usize);
 /// This structure is used during lexing and parsing to generate identifiers in
 /// the AST.
 #[derive(Clone)]
-pub struct Generator {
+pub struct SymbolGenerator {
+    /// Actual symbol table, the `Symbol` type above just contains indexes into
+    /// this table.
     symbols: Vec<String>,
-    table: HashMap<String, usize>,
+    /// Local cache of strings to symbols, this is destroyed after parsing.
+    table: HashMap<String, Symbol>,
 }
 
 thread_local!(static SYMBOLS: RefCell<Vec<String>> = RefCell::new(Vec::new()));
 
-impl Generator {
+impl SymbolGenerator {
     /// Creates a new empty symbol generator ready to generate new symbols.
-    pub fn new() -> Generator {
-        Generator { symbols: Vec::new(), table: HashMap::new() }
+    pub fn new() -> SymbolGenerator {
+        SymbolGenerator { symbols: Vec::new(), table: HashMap::new() }
     }
 
-    /// Interns a new symbol, returning the corresponding symbol.
+    /// Interns a new string, returning the corresponding symbol.
     ///
     /// This will aggressively deduplicate symbols, returning a Symbol which
-    /// points to a previously allocated identifer if one exists.
+    /// points to a previously allocated string if one exists.
     pub fn intern(&mut self, s: &str) -> Symbol {
-        let mut key = String::new();
-        key.push_str(s);
-        match self.table.get(&key) {
-            Some(&i) => return Symbol(i),
-            None => {}
+        if let Some(sym) = self.table.get(s) {
+            return *sym
         }
-        let ret = self.symbols.len();
-        self.table.insert(s.to_string(), ret);
-        self.symbols.push(s.to_string());
-        return Symbol(ret)
+        let ret = Symbol(self.symbols.len());
+        let s = String::from(s);
+        self.table.insert(s.clone(), ret);
+        self.symbols.push(s);
+        return ret
     }
 
     /// Consume ownership of this Generator, storing the symbol table in
@@ -57,8 +58,8 @@ impl Generator {
     /// The symbol table is stored in a "global" location so all functions have
     /// access to it instead of requiring it to be passed around.
     pub fn store(self) {
-        SYMBOLS.with(|symbols| {
-            *symbols.borrow_mut() = self.symbols.clone();
+        SYMBOLS.with(move |symbols| {
+            *symbols.borrow_mut() = self.symbols;
         })
     }
 }

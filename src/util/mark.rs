@@ -5,36 +5,34 @@
 //! higher quality error messages.
 
 use std::fmt;
-use std::path::PathBuf;
-use std::borrow::Borrow;
+use std::path::{PathBuf, Path};
 
 /// A mark is represented by the (lo, hi) byte offsets into the original source
 /// program.
 ///
 /// It is guaranteed that `lo <= hi`. A `CodeMap` instance is needed to make
 /// sense of a `Mark`.
-#[derive(Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Mark { lo: u32, hi: u32, }
 
 /// A generic wrapper to contain a marked piece of information.
 ///
 /// This is convenient for specifying that the inner `node` is produced by the
 /// code mentioned by `mark`.
-#[derive(Clone, Eq)]
+#[derive(Copy, Clone, Eq)]
 pub struct Marked<T> {
     pub mark: Mark,
     pub node: T,
 }
 
 /// Representation of a source program to translate a `Mark` to a `String`.
-#[derive(Clone)]
 pub struct CodeMap {
     code: String,
     file: PathBuf,
 }
 
 /// A dummy span to represent the "entire program"
-pub static DUMMY: Mark = Mark { lo: 0, hi: 0 };
+pub static DUMMY_MARK: Mark = Mark { lo: 0, hi: 0 };
 
 impl Mark {
     /// Creates a new `Mark` which is bounded by `lo` and `hi` in the source
@@ -85,16 +83,15 @@ impl CodeMap {
     pub fn linecol(&self, offset: u32) -> (usize, usize) {
         let offset = offset as usize;
         let mut cur = 0;
-        let code_str: &str = self.code.borrow();
-        for (i, line) in code_str.lines().enumerate() {
+        for (i, line) in self.code.split('\n').enumerate() {
             if cur + line.len() > offset {
                 return (i + 1, offset - cur + 1)
             }
             cur += line.len() + 1;
         }
-        (code_str.lines().count() + 1, 0 + 1)
+        (self.code.split('\n').count() + 1, 1)
     }
 
     /// Returns the file that this code map represents.
-    pub fn file(&self) -> &PathBuf { &self.file }
+    pub fn file(&self) -> &Path { &self.file }
 }
