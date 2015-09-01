@@ -28,6 +28,7 @@ fn main() {
     opts.optflag("", "dump-ast", "print AST");
     opts.optflag("", "dump-ir", "print IR");
     opts.optflag("", "dump-asm", "print assembly");
+    opts.optflag("t", "only-typecheck", "stop the compiler at typechecking");
 
     let matches = opts.parse(&args[1..]).unwrap();
     if matches.opt_present("h") || matches.free.is_empty() {
@@ -53,6 +54,9 @@ fn compile(input: &str, matches: &getopts::Matches) {
 
     types::typecheck(&ast);
     ast.errors.check();
+    if matches.opt_present("only-typecheck") {
+        return;
+    }
 
     let ir = middle::translate(ast);
     if matches.opt_present("dump-ir") {
