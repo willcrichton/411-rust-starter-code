@@ -82,6 +82,7 @@ Decl: Statement_ = {
 };
 
 Simp: Statement_ = {
+    <l:Lvalue> Assign <e:Marked<Expr>> => Statement_::Assign(l, e);
     <l:Marked<Lvalue>> <op:Asnop> <e:Marked<Expr>> => {
         let lexp = Marked::new(Expr_::Variable(l.unwrap()), l.mark);
         let bin = Expr_::Binary(op, Box::new(lexp), Box::new(e.clone()));
@@ -94,7 +95,7 @@ Lvalue: Ident = {
     Lparen <l:Lvalue> Rparen => l;
 };
 
-Asnop: Operator ={
+Asnop: Operator = {
     Pluseq => Operator::Plus;
     Minuseq => Operator::Minus;
     Stareq => Operator::Times;

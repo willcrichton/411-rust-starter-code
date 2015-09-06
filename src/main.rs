@@ -68,7 +68,7 @@ fn compile(input: &str, matches: &getopts::Matches) {
         println!("{}", asm);
     }
 
-    handle_error(File::create(path.with_extension("S")).and_then(|mut f| {
+    handle_error(File::create(path.with_extension("s")).and_then(|mut f| {
         f.write_all(asm.as_bytes())
     }));
 }
