@@ -1,23 +1,24 @@
-  _     _    ____                      _ _           
- | |   / |  / ___|___  _ __ ___  _ __ (_) | ___ _ __ 
+  _     _    ____                      _ _
+ | |   / |  / ___|___  _ __ ___  _ __ (_) | ___ _ __
  | |   | | | |   / _ \| '_ ` _ \| '_ \| | |/ _ \ '__|
- | |___| | | |__| (_) | | | | | | |_) | | |  __/ |   
- |_____|_|  \____\___/|_| |_| |_| .__/|_|_|\___|_|   
-                                |_|                  
+ | |___| | | |__| (_) | | | | | | |_) | | |  __/ |
+ |_____|_|  \____\___/|_| |_| |_| .__/|_|_|\___|_|
+                                |_|
 
 A barebones L1 compiler for 15-411 written in Rust.
 Written by Alex Crichton, updated by Will Crichton.
-Last modified August 7th, 2015.
+Last modified September 6th, 2015.
 
 ===========
 
 This compiler is a Cargo crate, and should be built as such with `cargo build`
 or it can be run with `cargo run path/to/input.l1`. You can pass additional
-flags with `cargo run path/to/input.l1 -- --your-flag`.
+flags with `cargo run path/to/input.l1 -- --your-flag`. To build with
+optimizations, run `cargo build --release`.
 
 The crate is broken up into the following files/directories:
 - src/main.rs   Toplevel runtime for the compiler
-- src/parse/    AST and PEG parser
+- src/parse/    AST and lexer/parser
 - src/types     Typechecker
 - src/ir/       IR language and translator
 - src/codegen/  Assembly representation, code generation, register allocation
@@ -28,7 +29,10 @@ The crate is broken up into the following files/directories:
 Notes on using Rust for your compiler:
 
 - There are no good graph libraries. This is a good resource for implementing
-  graphs in rust: https://github.com/nrc/r4cppp/blob/master/graphs/README.md
-  
+  graphs in rust: github.com/nrc/r4cppp/blob/master/graphs/README.md
+
 - Don't use thread_local! any more than you must. Globals are bad, and only
   used in the parser due to the constraints of the parser generator.
+
+- Instead of manually adding a verbose flag or similar feature, you should
+  consider using the log package: doc.rust-lang.org/log/log/index.html
