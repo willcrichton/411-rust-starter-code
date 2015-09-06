@@ -3,3 +3,5 @@ peg
 *.S
 *.o
 *.out
+src/parse/lexer_generated.rs
+src/parse/parser.rs

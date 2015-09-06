@@ -2,7 +2,21 @@
 name = "l1-compiler"
 version = "0.1.0"
 authors = ["Will Crichton <willcrichton@cmu.edu>"]
+build = "build.rs"
+
+[dependencies.lalrpop]
+git = "https://github.com/willcrichton/lalrpop.git"
 
 [dependencies]
 getopts = "0.2"
-peg = "0.3.0"
+# lalrpop = "0.4.1"
+lalrpop-util = "0.4.1"
+rustlex_codegen = { version = "0.3.2", features = ["with-syntex"] }
+
+[build-dependencies]
+# lalrpop = "0.4.1"
+syntex = "0.11.0"
+rustlex_codegen = { version = "0.3.2", features = ["with-syntex"] }
+
+[build-dependencies.lalrpop]
+git = "https://github.com/willcrichton/lalrpop.git"

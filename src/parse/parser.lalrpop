@@ -1,0 +1,128 @@
+use super::token::Token;
+use util::{Symbol, Marked, Mark, DUMMY_MARK};
+use super::ast::*;
+
+grammar;
+
+extern {
+    type Location = usize;
+
+    enum Token {
+        Struct => Token::Struct(..),
+        Typedef => Token::Typedef(..),
+        If => Token::If(..),
+        Else => Token::Else(..),
+        While => Token::While(..),
+        For => Token::For(..),
+        Continue => Token::Continue(..),
+        Break => Token::Break(..),
+        Assert => Token::Assert(..),
+        True => Token::True(..),
+        False => Token::False(..),
+        Null => Token::Null(..),
+        Alloc => Token::Alloc(..),
+        Allocarray => Token::Allocarray(..),
+        Bool => Token::Bool(..),
+        Void => Token::Void(..),
+        Char => Token::Char(..),
+        String => Token::String(..),
+        Int => Token::Int(..),
+        Semi => Token::Semi(..),
+        Intconst => Token::Intconst(<u32>),
+        Ident => Token::Ident(<Ident>),
+        Return => Token::Return(..),
+        Main => Token::Main(..),
+        Plus => Token::Plus(..),
+        Minus => Token::Minus(..),
+        Star => Token::Star(..),
+        Slash => Token::Slash(..),
+        Percent => Token::Percent(..),
+        Assign => Token::Assign(..),
+        Pluseq => Token::Pluseq(..),
+        Minuseq => Token::Minuseq(..),
+        Stareq => Token::Stareq(..),
+        Slasheq => Token::Slasheq(..),
+        Percenteq => Token::Percenteq(..),
+        Lbrace => Token::Lbrace(..),
+        Rbrace => Token::Rbrace(..),
+        Lparen => Token::Lparen(..),
+        Rparen => Token::Rparen(..),
+        Decrement => Token::Decrement(..),
+    }
+}
+
+Marked<T>: Marked<T> = {
+  // TODO: why is this a shift-reduce conflict?
+  // <lo:@L> <t:T> <hi:@R> => Marked::new(t, Mark::new(lo, hi));
+  <t:T> => Marked::new(t, DUMMY_MARK);
+};
+
+List<T>: Vec<T> = {
+    => vec![];
+    <l:List<T>> <t:T> => {
+        let mut l = l;
+        l.push(t);
+        l
+    };
+};
+
+pub Program: Vec<Statement> = {
+    Int Main Lparen Rparen Lbrace <s:List<Marked<Stmt>>> Rbrace => s;
+};
+
+Stmt: Statement_ = {
+    <d:Decl> Semi => d;
+    <s:Simp> Semi => s;
+    Return <e:Marked<Expr>> Semi => Statement_::Return(e);
+};
+
+Decl: Statement_ = {
+    Int <id:Ident> => Statement_::Decl(id);
+    Int <id:Ident> Assign <e:Marked<Expr>> => Statement_::DeclAssign(id, e);
+};
+
+Simp: Statement_ = {
+    <l:Marked<Lvalue>> <op:Asnop> <e:Marked<Expr>> => {
+        let lexp = Marked::new(Expr_::Variable(l.unwrap()), l.mark);
+        let bin = Expr_::Binary(op, Box::new(lexp), Box::new(e.clone()));
+        Statement_::Assign(l.unwrap(), Marked::new(bin, e.mark))
+    };
+};
+
+Lvalue: Ident = {
+    <id:Ident> => id;
+    Lparen <l:Lvalue> Rparen => l;
+};
+
+Asnop: Operator ={
+    Pluseq => Operator::Plus;
+    Minuseq => Operator::Minus;
+    Stareq => Operator::Times;
+    Slasheq => Operator::DividedBy;
+    Percenteq => Operator::Modulo;
+};
+
+ExprGen<R, S, T>: Expr_ = {
+    <l:Marked<R>> <op:S> <r:Marked<T>> =>
+        Expr_::Binary(op, Box::new(l), Box::new(r));
+};
+
+ExprOp: Operator = {Plus => Operator::Plus; Minus => Operator::Minus;};
+Expr: Expr_ = {<e:ExprGen<Expr,ExprOp,Expr0>> => e; Expr0;};
+
+Expr0Op: Operator = {
+    Star => Operator::Times;
+    Slash => Operator::DividedBy;
+    Percent => Operator::Modulo;
+};
+Expr0: Expr_ = {<e:ExprGen<Expr0,Expr0Op,Primary>> => e; Primary;};
+
+Primary: Expr_ = {
+    Lparen <e:Expr> Rparen => e;
+    Decrement <e:Marked<Primary>> =>
+        Expr_::Unary(Operator::Decrement, Box::new(e));
+    Minus <e:Marked<Primary>> =>
+        Expr_::Unary(Operator::Negative, Box::new(e));
+    <n:Intconst> => Expr_::Constant(n);
+    <id:Ident> => Expr_::Variable(id);
+};

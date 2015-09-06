@@ -13,7 +13,7 @@ use std::path::{PathBuf, Path};
 /// It is guaranteed that `lo <= hi`. A `CodeMap` instance is needed to make
 /// sense of a `Mark`.
 #[derive(Copy, Clone, Eq, PartialEq)]
-pub struct Mark { lo: u32, hi: u32, }
+pub struct Mark { pub lo: usize, pub hi: usize, }
 
 /// A generic wrapper to contain a marked piece of information.
 ///
@@ -37,7 +37,7 @@ pub static DUMMY_MARK: Mark = Mark { lo: 0, hi: 0 };
 impl Mark {
     /// Creates a new `Mark` which is bounded by `lo` and `hi` in the source
     /// code of the original program.
-    pub fn new(lo: u32, hi: u32) -> Mark {
+    pub fn new(lo: usize, hi: usize) -> Mark {
         Mark { lo: lo, hi: hi }
     }
 
@@ -65,6 +65,12 @@ impl<T: PartialEq> PartialEq for Marked<T> {
 }
 
 /// Allow marked things to be printed with `{:?}`
+impl<T: fmt::Debug> fmt::Debug for Marked<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.node.fmt(f)
+    }
+}
+
 impl<T: fmt::Display> fmt::Display for Marked<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.node.fmt(f)
@@ -80,12 +86,11 @@ impl CodeMap {
     /// Converts a bytes offset of a `Mark` into a (line, column) pair.
     ///
     /// All indexes are 1-based.
-    pub fn linecol(&self, offset: u32) -> (usize, usize) {
-        let offset = offset as usize;
+    pub fn linecol(&self, offset: usize) -> (usize, usize) {
         let mut cur = 0;
         for (i, line) in self.code.split('\n').enumerate() {
             if cur + line.len() > offset {
-                return (i + 1, offset - cur + 1)
+                return (i + 1, offset + 1 - cur)
             }
             cur += line.len() + 1;
         }

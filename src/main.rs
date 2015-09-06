@@ -1,9 +1,7 @@
 //! L1 compiler toplevel
 
-#![feature(plugin)]
-#![plugin(peg_syntax_ext)]
-
 extern crate getopts;
+extern crate rustlex_codegen as rustlex;
 
 use std::env;
 use std::fs::File;
@@ -65,7 +63,7 @@ fn compile(input: &str, matches: &getopts::Matches) {
 
     let asm = codegen::translate(ir);
     let asm = asm.into_iter().map(|x| x.to_string()).collect::<Vec<_>>();
-    let asm = asm.join("\n");
+    let asm = asm.connect("\n");
     if matches.opt_present("dump-asm") {
         println!("{}", asm);
     }
