@@ -35,13 +35,13 @@ impl fmt::Display for Instruction {
             Instruction::Label(ref s) => write!(f, "{}:", s),
             Instruction::Binop(ref op, ref d, ref s1, ref s2) => {
                 match s2 {
-                    &Some(ref s2) => write!(f, "\t{}\t{} <- {},{}", op, d, s1, s2),
-                    &None => write!(f, "\t{}\t{} <- {}", op, d, s1),
+                    &Some(ref s2) => write!(f, "{} <-- {} {} {}", d, s1, op, s2),
+                    &None => write!(f, "{} <-- {} {}", d, op, s1),
                 }
             }
-            Instruction::Mov(ref d, ref s) => write!(f, "\tMOV\t{}, {}", s, d),
-            Instruction::Directive(ref s) => write!(f, "\t{}", s),
-            Instruction::Comment(ref s) => write!(f, "\t/* {} */", s),
+            Instruction::Mov(ref d, ref s) => write!(f, "{} <-- {}", d, s),
+            Instruction::Directive(ref s) => write!(f, "{}", s),
+            Instruction::Comment(ref s) => write!(f, "/* {} */", s),
         }
 
     }
@@ -68,11 +68,11 @@ impl fmt::Display for Register {
 impl fmt::Display for Op {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Op::Add => "ADD".fmt(f),
-            Op::Sub => "SUB".fmt(f),
-            Op::Mul => "MUL".fmt(f),
-            Op::Div => "DIV".fmt(f),
-            Op::Mod => "MOD".fmt(f),
+            Op::Add => "+".fmt(f),
+            Op::Sub => "-".fmt(f),
+            Op::Mul => "*".fmt(f),
+            Op::Div => "/".fmt(f),
+            Op::Mod => "%".fmt(f),
         }
     }
 }

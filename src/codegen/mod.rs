@@ -16,8 +16,6 @@ struct Translator {
 pub fn translate(ir: Program) -> Vec<Instruction> {
     let Program { statements, temps } = ir;
     let mut translator = Translator::new(temps);
-    translator.ins.push(Instruction::Directive(".globl __c0_main".to_string()));
-    translator.ins.push(Instruction::Label("__c0_main".to_string()));
     for stm in statements.into_iter() {
         translator.stm(stm);
     }
@@ -37,7 +35,6 @@ impl Translator {
             // return e is implented as %eax <- e
             Statement::Return(e) => {
                 self.exp(Operand::Reg(Register::EAX), e);
-                self.ins.push(Instruction::Directive("ret".to_string()))
             }
         }
     }
