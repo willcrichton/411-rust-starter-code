@@ -6,6 +6,7 @@ use std::process;
 
 use util::mark::{Mark, CodeMap, DUMMY_MARK};
 
+#[derive(Clone)]
 pub struct Errors {
     cm: CodeMap,
     errored: Cell<bool>,

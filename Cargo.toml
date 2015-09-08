@@ -7,16 +7,26 @@ build = "build.rs"
 [dependencies.lalrpop]
 git = "https://github.com/willcrichton/lalrpop.git"
 
+[dependencies.rustlex_codegen]
+git = "https://github.com/willcrichton/rustlex.git"
+version = "0.3.1"
+features = ["with-syntex"]
+
 [dependencies]
 getopts = "0.2"
 # lalrpop = "0.4.1"
 lalrpop-util = "0.4.1"
-rustlex_codegen = { version = "0.3.2", features = ["with-syntex"] }
+#rustlex_codegen = { version = "0.3.2", features = ["with-syntex"] }
 
 [build-dependencies]
 # lalrpop = "0.4.1"
 syntex = "0.11.0"
-rustlex_codegen = { version = "0.3.2", features = ["with-syntex"] }
+#rustlex_codegen = { version = "0.3.2", features = ["with-syntex"] }
+
+[build-dependencies.rustlex_codegen]
+git = "https://github.com/willcrichton/rustlex.git"
+version = "0.3.1"
+features = ["with-syntex"]
 
 [build-dependencies.lalrpop]
 git = "https://github.com/willcrichton/lalrpop.git"

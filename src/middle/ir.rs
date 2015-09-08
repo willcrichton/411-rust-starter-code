@@ -9,17 +9,20 @@ pub struct Program {
     pub temps: TempAllocator,
 }
 
+#[derive(Clone)]
 pub enum Statement {
     Move(Expr, Expr),
     Return(Expr),
 }
 
+#[derive(Clone)]
 pub enum Expr {
     Constant(u32),
     Temp(Temp),
     Binop(Binop, Box<Expr>, Box<Expr>),
 }
 
+#[derive(Clone)]
 pub enum Binop { Add, Sub, Mul, Div, Mod }
 
 impl fmt::Display for Program {
@@ -64,4 +67,3 @@ impl fmt::Display for Binop {
         }
     }
 }
-

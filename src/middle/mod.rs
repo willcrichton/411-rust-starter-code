@@ -4,32 +4,40 @@ use std::collections::HashMap;
 
 use middle::ir::{Binop, Statement, Expr};
 use parse::ast::{self, Expr_, Operator, Statement_};
-use util::{Temp, TempAllocator, Errors};
+use util::{Temp, TempAllocator};
 
 pub mod ir;
 
 struct Translator {
     temps: TempAllocator,
     syms: HashMap<ast::Ident, Temp>,
-    errors: Errors,
 }
 
 pub fn translate(p: ast::Program) -> ir::Program {
-    let mut translator = Translator::new(p.errors);
+    let mut translator = Translator::new();
+    let mut stmts = vec![];
+
+    for stm in p.statements {
+        match translator.stm(&stm) {
+            Some(new_stm) => {
+                stmts.push(new_stm.clone());
+                if let Statement::Return(..) = new_stm { break };
+            },
+            None => {}
+        }
+    }
+
     ir::Program {
-        statements: p.statements.iter()
-                                .filter_map(|stm| translator.stm(stm))
-                                .collect(),
+        statements: stmts,
         temps: translator.temps,
     }
 }
 
 impl Translator {
-    fn new(errors: Errors) -> Translator {
+    fn new() -> Translator {
         Translator {
             temps: TempAllocator::new(),
             syms: HashMap::new(),
-            errors: errors
         }
     }
 
@@ -37,7 +45,8 @@ impl Translator {
         match stm.node {
             Statement_::Assign(id, ref e) |
             Statement_::DeclAssign(id, ref e) => {
-                Some(Statement::Move(Expr::Temp(self.temp(id)), self.exp(e)))
+                let exp = self.exp(e);
+                Some(Statement::Move(Expr::Temp(self.temp(id)), exp))
             }
             Statement_::Return(ref e) => Some(Statement::Return(self.exp(e))),
             Statement_::Decl(_) => None
@@ -47,14 +56,7 @@ impl Translator {
     fn exp(&mut self, exp: &ast::Expr) -> Expr {
         match exp.node {
             Expr_::Variable(id) => {
-                match self.syms.get(&id) {
-                    Some(sym) => Expr::Temp(*sym),
-                    None => {
-                        let msg = format!("attempted to use variable {} \
-                                           before initialization", id);
-                        self.errors.die(&exp.mark, &msg);
-                    }
-                }
+                Expr::Temp(*self.syms.get(&id).unwrap())
             },
             Expr_::Constant(c) => Expr::Constant(c),
             Expr_::Unary(Operator::Negative, ref e) => {
@@ -67,7 +69,7 @@ impl Translator {
                             Box::new(self.exp(e1)),
                             Box::new(self.exp(e2))),
 
-            Expr_::Unary(_, _) => unimplemented!(),
+            Expr_::Unary(_, _) => unreachable!(),
         }
     }
 

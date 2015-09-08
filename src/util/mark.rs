@@ -26,6 +26,7 @@ pub struct Marked<T> {
 }
 
 /// Representation of a source program to translate a `Mark` to a `String`.
+#[derive(Clone)]
 pub struct CodeMap {
     code: String,
     file: PathBuf,

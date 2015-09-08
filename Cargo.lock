@@ -2,10 +2,10 @@
 name = "l1-compiler"
 version = "0.1.0"
 dependencies = [
- "getopts 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "getopts 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "lalrpop 0.5.0 (git+https://github.com/willcrichton/lalrpop.git)",
  "lalrpop-util 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustlex_codegen 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rustlex_codegen 0.3.1 (git+https://github.com/willcrichton/rustlex.git)",
  "syntex 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -28,10 +28,10 @@ dependencies = [
 
 [[package]]
 name = "aster"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "syntex_syntax 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_syntax 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -46,11 +46,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "getopts"
-version = "0.2.11"
+version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "itertools"
@@ -115,15 +112,15 @@ source = "git+https://github.com/willcrichton/lalrpop.git#7d4872f72bd71ff6b52a2a
 
 [[package]]
 name = "libc"
-version = "0.1.8"
+version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "log"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -131,25 +128,25 @@ name = "memchr"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "quasi"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "syntex_syntax 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_syntax 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "quasi_codegen"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "aster 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "aster 0.4.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "syntex 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex_syntax 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_syntax 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -158,7 +155,7 @@ version = "0.3.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "advapi32-sys 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -184,14 +181,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rustlex_codegen"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+version = "0.3.1"
+source = "git+https://github.com/willcrichton/rustlex.git#5bca8529ab28d05e2da551b0e6d0cb681c905c54"
 dependencies = [
- "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "quasi 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "quasi_codegen 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quasi 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quasi_codegen 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syntex 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex_syntax 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_syntax 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -207,20 +204,20 @@ name = "syntex"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "syntex_syntax 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_syntax 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "syntex_syntax"
-version = "0.12.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.16 (registry+https://github.com/rust-lang/crates.io-index)",
  "term 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
- "unicode-xid 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "unicode-xid 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -235,6 +232,11 @@ dependencies = [
 [[package]]
 name = "unicode-xid"
 version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "unicode-xid"
+version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

@@ -9,12 +9,34 @@ A barebones L1 compiler for 15-411 written in Rust.
 Written by Alex Crichton, updated by Will Crichton.
 Last modified September 6th, 2015.
 
-===========
+-----------------------------------------------------------------------
+Welcome to 15-411!
+-----------------------------------------------------------------------
 
-This compiler is a Cargo crate, and should be built as such with `cargo build`
-or it can be run with `cargo run path/to/input.l1`. You can pass additional
+This is some starter code for the L1 compiler you have to build for
+the Lab1.  It contains a lexer, parser, translator, and even a code
+generator, except that the code generator creates pseudo assembly
+language with fictitious instructions and an unlimited number of
+registers.  We took some care to use good style (according to the
+instructor); you may consider this a model for your own coding.  Feel
+free to modify any and all of this code as you see fit.
+
+Bug reports to the course staff are particularly welcome and will be
+noted in the extra credit category.
+
+-----------------------------------------------------------------------
+Rust Notes
+-----------------------------------------------------------------------
+
+This code was written against Rust 1.2.0. The compiler itself is a
+Cargo crate, and should be built as such with `cargo build` or it can
+be run with `cargo run path/to/input.l1`. You can pass additional
 flags with `cargo run path/to/input.l1 -- --your-flag`. To build with
 optimizations, run `cargo build --release`.
+
+------------------------------------------------------------------------
+Source Files
+------------------------------------------------------------------------
 
 The crate is broken up into the following files/directories:
 - src/main.rs   Toplevel runtime for the compiler
@@ -24,15 +46,20 @@ The crate is broken up into the following files/directories:
 - src/codegen/  Assembly representation, code generation, register allocation
 - src/util/     Various utilities used across parts of the code
 
-===========
+------------------------------------------------------------------------
+Debugging Hints
+------------------------------------------------------------------------
 
 Notes on using Rust for your compiler:
 
-- There are no good graph libraries. This is a good resource for implementing
-  graphs in rust: github.com/nrc/r4cppp/blob/master/graphs/README.md
+- There are no good graph libraries. This is a good resource for
+  implementing graphs in rust:
+  github.com/nrc/r4cppp/blob/master/graphs/README.md
 
-- Don't use thread_local! any more than you must. Globals are bad, and only
-  used in the parser due to the constraints of the parser generator.
+- Don't use thread_local! any more than you must. Globals are bad, and
+  only used in the parser due to the constraints of the parser
+  generator.
 
-- Instead of manually adding a verbose flag or similar feature, you should
-  consider using the log package: doc.rust-lang.org/log/log/index.html
+- Instead of manually adding a verbose flag or similar feature, you
+  should consider using the log package:
+  doc.rust-lang.org/log/log/index.html

@@ -9,7 +9,7 @@ use util::Temp;
 
 #[derive(Clone)]
 pub enum Instruction {
-    Binop(Op, Operand, Operand, Option<Operand>),
+    Binop(Op, Operand, Operand, Operand),
     Mov(Operand, Operand),
     Directive(String),
     Comment(String),
@@ -33,15 +33,11 @@ impl fmt::Display for Instruction {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Instruction::Label(ref s) => write!(f, "{}:", s),
-            Instruction::Binop(ref op, ref d, ref s1, ref s2) => {
-                match s2 {
-                    &Some(ref s2) => write!(f, "{} <-- {} {} {}", d, s1, op, s2),
-                    &None => write!(f, "{} <-- {} {}", d, op, s1),
-                }
-            }
-            Instruction::Mov(ref d, ref s) => write!(f, "{} <-- {}", d, s),
-            Instruction::Directive(ref s) => write!(f, "{}", s),
-            Instruction::Comment(ref s) => write!(f, "/* {} */", s),
+            Instruction::Binop(ref op, ref d, ref s1, ref s2) =>
+                write!(f, "\t{} <-- {} {} {}", d, s1, op, s2),
+            Instruction::Mov(ref d, ref s) => write!(f, "\t{} <-- {}", d, s),
+            Instruction::Directive(ref s) => write!(f, "\t{}", s),
+            Instruction::Comment(ref s) => write!(f, "\t/* {} */", s),
         }
 
     }

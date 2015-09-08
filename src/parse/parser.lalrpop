@@ -1,6 +1,7 @@
 use super::token::Token;
 use util::{Symbol, Marked, Mark, DUMMY_MARK};
 use super::ast::*;
+use super::{parser_panic, intern};
 
 grammar;
 
@@ -79,6 +80,8 @@ Stmt: Statement_ = {
 Decl: Statement_ = {
     Int <id:Ident> => Statement_::Decl(id);
     Int <id:Ident> Assign <e:Marked<Expr>> => Statement_::DeclAssign(id, e);
+    Int Main => Statement_::Decl(intern("main"));
+    Int Main Assign <e:Marked<Expr>> => Statement_::DeclAssign(intern("main"), e);
 };
 
 Simp: Statement_ = {
@@ -92,6 +95,7 @@ Simp: Statement_ = {
 
 Lvalue: Ident = {
     <id:Ident> => id;
+    Main => intern("main");
     Lparen <l:Lvalue> Rparen => l;
 };
 
@@ -121,9 +125,10 @@ Expr0: Expr_ = {<e:ExprGen<Expr0,Expr0Op,Primary>> => e; Primary;};
 Primary: Expr_ = {
     Lparen <e:Expr> Rparen => e;
     Decrement <e:Marked<Primary>> =>
-        Expr_::Unary(Operator::Decrement, Box::new(e));
+        parser_panic(String::from("Decrement not yet implemented"), e.mark);
     Minus <e:Marked<Primary>> =>
         Expr_::Unary(Operator::Negative, Box::new(e));
-    <n:Intconst> => Expr_::Constant(n);
+    <n:Marked<Intconst>> => Expr_::Constant(n.node);
     <id:Ident> => Expr_::Variable(id);
+    Main => Expr_::Variable(intern("main"));
 };

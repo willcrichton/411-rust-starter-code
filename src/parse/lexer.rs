@@ -3,13 +3,17 @@ extern crate rustlex_codegen as rustlex;
 use std::borrow::Borrow;
 
 use util::{Marked, Mark};
-use super::GENERATOR;
+use super::{intern, parser_panic};
 use super::token::Token;
 use std::io;
 
-fn mark<R: io::Read>(tok: Token, lexer: &mut Lexer<R>) -> Option<Marked<Token>> {
+fn mark_for<R: io::Read>(lexer: &mut Lexer<R>) -> Mark {
     let ::rustlex::rt::RustLexPos { off, .. } = lexer._input.tok;
-    Some(Marked::new(tok, Mark::new(off, off + lexer.yystr().len())))
+    Mark::new(off, off + lexer.yystr().len())
+}
+
+fn mark<R: io::Read>(tok: Token, lexer: &mut Lexer<R>) -> Option<Marked<Token>> {
+    Some(Marked::new(tok, mark_for(lexer)))
 }
 
 macro_rules! some { ($x:expr) => { |lexer: &mut Lexer<R>| -> Option<Marked<Token>> { mark($x, lexer) } } }
@@ -21,20 +25,16 @@ rustlex! Lexer {
     token MarkedToken;
     property comment_depth:usize = 0;
 
-    let WHITESPACE = ['\n' '\t' '\r' "\011" "\012"];
+    let WHITESPACE = [' ' '\n' '\t' '\r' '\x09' '\x0A' '\x0B' '\x0C' '\x0D'];
     let ID = ['A'-'Z''a'-'z''_']['A'-'Z''a'-'z''0'-'9''_']*;
     let DECNUM = '0' | ['1'-'9']['0'-'9']*;
     let HEXNUM = '0'["xX"]['0'-'9''a'-'f''A'-'F']+;
 
     INITIAL {
-        WHITESPACE+ => none!(),
+        WHITESPACE => none!(),
 
-        ID => |lexer: &mut Lexer<R>| -> Option<Marked<Token>> {
-            let s = lexer.yystr();
-            let mut symbol = None;
-            GENERATOR.with(
-                |generator| symbol = Some(generator.borrow_mut().intern(s.borrow())));
-            mark(Token::Ident(symbol.expect("Symbol generator failed")), lexer)
+        ID => |lexer: &mut Lexer<R>| {
+            mark(Token::Ident(intern(lexer.yystr().borrow())), lexer)
         },
 
         '(' => some!(Token::Lparen),
@@ -81,7 +81,14 @@ rustlex! Lexer {
         "main" => some!(Token::Main),
 
         DECNUM => |lexer: &mut Lexer<R>| {
-            mark(Token::Intconst(lexer.yystr()[..].parse().unwrap()), lexer)
+            let n = lexer.yystr()[..].parse().unwrap();
+
+            if n > 2u32.pow(31) {
+                parser_panic(format!("Constant {} is too large", n),
+                             mark_for(lexer));
+            }
+
+            mark(Token::Intconst(n), lexer)
         },
 
         HEXNUM => |lexer: &mut Lexer<R>| {
@@ -96,11 +103,11 @@ rustlex! Lexer {
             None
         },
 
-        "//"[^'\n']* => none!(),
+        "//" [^'\n']* => none!(),
     }
 
     COMMENT {
-        [^"/*""*/"]* => none!(),
+        . => none!(),
 
         "*/" => |lexer: &mut Lexer<R>| -> Option<Marked<Token>> {
             lexer.comment_depth -= 1;

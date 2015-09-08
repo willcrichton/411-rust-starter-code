@@ -64,7 +64,6 @@ impl SymbolGenerator {
     }
 }
 
-// TODO: fmt::Display -> fmt::Debug
 impl fmt::Display for Symbol {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let Symbol(u) = *self;

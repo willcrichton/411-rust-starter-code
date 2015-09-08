@@ -36,15 +36,19 @@ impl<'a> TypeChecker<'a> {
 
     fn stm(&mut self, s: &ast::Statement) {
         match s.node {
-            Statement_::Decl(id) => self.check_decl(id, &s.mark, false),
+            Statement_::Decl(id) => self.check_decl(id, &s.mark),
             Statement_::DeclAssign(id, ref e) => {
-                self.check_decl(id, &s.mark, true);
+                self.check_decl(id, &s.mark);
                 self.assign(id, &s.mark, e);
             }
             Statement_::Assign(id, ref e) => self.assign(id, &s.mark, e),
             Statement_::Return(ref e) => {
+                self.expr(e);
                 self.return_found = true;
-                self.expr(e)
+                // Define all variables declared before return
+                for (_, val) in self.syms.iter_mut() {
+                    *val = true;
+                }
             }
         }
     }
@@ -64,7 +68,7 @@ impl<'a> TypeChecker<'a> {
         match e.node {
             Expr_::Variable(id) => {
                 match self.syms.get(&id).map(|b| *b) {
-                    Some(false) if !self.return_found => {
+                    Some(false) => {
                         let msg = format!("uninitialized variable `{}`", id);
                         self.prog.errors.add(&e.mark, &msg);
                     }
@@ -84,8 +88,8 @@ impl<'a> TypeChecker<'a> {
         }
     }
 
-    fn check_decl(&mut self, id: ast::Ident, mark: &Mark, initialized: bool) {
-        match self.syms.insert(id, initialized) {
+    fn check_decl(&mut self, id: ast::Ident, mark: &Mark) {
+        match self.syms.insert(id, false) {
             Some(..) => {
                 let msg = format!("redeclared variable `{}`", id);
                 self.prog.errors.add(mark, &msg);
