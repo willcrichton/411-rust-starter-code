@@ -1,5 +1,3 @@
-extern crate rustlex_codegen as rustlex;
-
 use std::borrow::Borrow;
 
 use util::{Marked, Mark};

@@ -1,7 +1,10 @@
 //! L1 compiler toplevel
 
+#![feature(plugin)]
+#![plugin(rustlex)]
+#[allow(plugin_as_library)] extern crate rustlex;
+
 extern crate getopts;
-extern crate rustlex_codegen as rustlex;
 
 use std::env;
 use std::fs::File;

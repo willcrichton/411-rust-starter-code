@@ -12,11 +12,11 @@ use std::sync::mpsc::channel;
 use self::lalrpop_util::ParseError;
 
 use util::{Errors, CodeMap, SymbolGenerator, Mark, DUMMY_MARK, Symbol};
-use self::lexer_generated::Lexer;
+use self::lexer::Lexer;
 
 pub mod ast;
 mod token;
-mod lexer_generated;
+mod lexer;
 mod parser;
 
 thread_local! {

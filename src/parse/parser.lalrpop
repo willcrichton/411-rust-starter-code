@@ -55,80 +55,89 @@ extern {
 Marked<T>: Marked<T> = {
   // TODO: why is this a shift-reduce conflict?
   // <lo:@L> <t:T> <hi:@R> => Marked::new(t, Mark::new(lo, hi));
-  <t:T> => Marked::new(t, DUMMY_MARK);
+  <t:T> => Marked::new(t, DUMMY_MARK)
 };
 
 List<T>: Vec<T> = {
-    => vec![];
+    => vec![]
     <l:List<T>> <t:T> => {
         let mut l = l;
         l.push(t);
         l
-    };
+    }
 };
 
 pub Program: Vec<Statement> = {
-    Int Main Lparen Rparen Lbrace <s:List<Marked<Stmt>>> Rbrace => s;
+    Int Main Lparen Rparen Lbrace <s:List<Marked<Stmt>>> Rbrace => s
 };
 
 Stmt: Statement_ = {
-    <d:Decl> Semi => d;
-    <s:Simp> Semi => s;
-    Return <e:Marked<Expr>> Semi => Statement_::Return(e);
+    <d:Decl> Semi => d
+    <s:Simp> Semi => s
+    Return <e:Marked<Expr>> Semi => Statement_::Return(e)
 };
 
 Decl: Statement_ = {
-    Int <id:Ident> => Statement_::Decl(id);
-    Int <id:Ident> Assign <e:Marked<Expr>> => Statement_::DeclAssign(id, e);
-    Int Main => Statement_::Decl(intern("main"));
-    Int Main Assign <e:Marked<Expr>> => Statement_::DeclAssign(intern("main"), e);
+    Int <id:Ident> => Statement_::Decl(id)
+    Int <id:Ident> Assign <e:Marked<Expr>> => Statement_::DeclAssign(id, e)
+    Int Main => Statement_::Decl(intern("main"))
+    Int Main Assign <e:Marked<Expr>> => Statement_::DeclAssign(intern("main"), e)
 };
 
 Simp: Statement_ = {
-    <l:Lvalue> Assign <e:Marked<Expr>> => Statement_::Assign(l, e);
+    <l:Lvalue> Assign <e:Marked<Expr>> => Statement_::Assign(l, e)
     <l:Marked<Lvalue>> <op:Asnop> <e:Marked<Expr>> => {
         let lexp = Marked::new(Expr_::Variable(l.unwrap()), l.mark);
         let bin = Expr_::Binary(op, Box::new(lexp), Box::new(e.clone()));
         Statement_::Assign(l.unwrap(), Marked::new(bin, e.mark))
-    };
+    }
 };
 
 Lvalue: Ident = {
-    <id:Ident> => id;
-    Main => intern("main");
-    Lparen <l:Lvalue> Rparen => l;
+    <id:Ident> => id
+    Main => intern("main")
+    Lparen <l:Lvalue> Rparen => l
 };
 
 Asnop: Operator = {
-    Pluseq => Operator::Plus;
-    Minuseq => Operator::Minus;
-    Stareq => Operator::Times;
-    Slasheq => Operator::DividedBy;
-    Percenteq => Operator::Modulo;
+    Pluseq => Operator::Plus
+    Minuseq => Operator::Minus
+    Stareq => Operator::Times
+    Slasheq => Operator::DividedBy
+    Percenteq => Operator::Modulo
 };
 
 ExprGen<R, S, T>: Expr_ = {
     <l:Marked<R>> <op:S> <r:Marked<T>> =>
-        Expr_::Binary(op, Box::new(l), Box::new(r));
+        Expr_::Binary(op, Box::new(l), Box::new(r))
 };
 
-ExprOp: Operator = {Plus => Operator::Plus; Minus => Operator::Minus;};
-Expr: Expr_ = {<e:ExprGen<Expr,ExprOp,Expr0>> => e; Expr0;};
+ExprOp: Operator = {
+  Plus => Operator::Plus
+  Minus => Operator::Minus
+};
+Expr: Expr_ = {
+  <e:ExprGen<Expr,ExprOp,Expr0>> => e
+  Expr0
+};
 
 Expr0Op: Operator = {
-    Star => Operator::Times;
-    Slash => Operator::DividedBy;
-    Percent => Operator::Modulo;
+    Star => Operator::Times
+    Slash => Operator::DividedBy
+    Percent => Operator::Modulo
 };
-Expr0: Expr_ = {<e:ExprGen<Expr0,Expr0Op,Primary>> => e; Primary;};
+Expr0: Expr_ = {
+  <e:ExprGen<Expr0,Expr0Op,Primary>> => e
+  Primary
+};
 
 Primary: Expr_ = {
-    Lparen <e:Expr> Rparen => e;
+    Lparen <e:Expr> Rparen => e
     Decrement <e:Marked<Primary>> =>
-        parser_panic(String::from("Decrement not yet implemented"), e.mark);
+        parser_panic(String::from("Decrement not yet implemented"), e.mark)
     Minus <e:Marked<Primary>> =>
-        Expr_::Unary(Operator::Negative, Box::new(e));
-    <n:Marked<Intconst>> => Expr_::Constant(n.node);
-    <id:Ident> => Expr_::Variable(id);
-    Main => Expr_::Variable(intern("main"));
+        Expr_::Unary(Operator::Negative, Box::new(e))
+    <n:Marked<Intconst>> => Expr_::Constant(n.node)
+    <id:Ident> => Expr_::Variable(id)
+    Main => Expr_::Variable(intern("main"))
 };
